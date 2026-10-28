@@ -27,7 +27,7 @@ src/app            UI (Next.js App Router) e rotas /api
 src/components     Cards (chamado, rascunho, opções, transferência, trace)
 src/mastra         Agent (Mastra) e suas tools
 src/lib/desk       Domínio: SLA, chamados (legado), central de ajuda, conversas, auth
-src/lib/db.ts      SQLite (better-sqlite3), schema e seed
+src/lib/db.ts      SQLite (node:sqlite, nativo do Node), schema e seed
 ```
 
 - Interface, agent e serviços são separados: as tools só chamam serviços de `lib/desk`; a UI só fala com `/api`.
