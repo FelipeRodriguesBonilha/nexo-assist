@@ -70,10 +70,11 @@ export async function* handleUserMessage(employee: Employee, conversationId: str
     while (seen < trace.length) yield { type: "trace", step: trace[seen++]! };
   } catch (e) {
     console.error("[agent]", e);
-    if (!answer) {
+    if (!answer && !parts.length) {
       yield { type: "error", message: FALLBACK };
       return;
     }
+    answer ||= "Executei a ação, mas tive um problema para redigir a resposta. Confira os detalhes abaixo.";
   }
 
   const ordered: MessagePart[] = [...(trace.length ? [{ kind: "trace" as const, steps: trace }] : []), ...parts];

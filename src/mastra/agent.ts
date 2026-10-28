@@ -27,7 +27,7 @@ export function createAgent(ctx: ToolContext) {
     id: "nexo-assist",
     name: "Nexo Assist",
     instructions: INSTRUCTIONS(ctx.employee.name.split(" ")[0] ?? ctx.employee.name, new Date(), pending ? JSON.stringify(pending.draft) : null),
-    model: process.env.AGENT_MODEL ?? "google/gemini-2.5-flash",
+    model: process.env.AGENT_MODEL ?? "google/gemini-3.5-flash",
     tools: buildTools(ctx),
   });
 }
