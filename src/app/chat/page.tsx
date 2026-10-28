@@ -62,7 +62,6 @@ export default function ChatPage() {
     bottom.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, live]);
 
-  // Com analista na conversa, busca novas mensagens periodicamente.
   useEffect(() => {
     if (!conv || conv.status === "agent" || busy) return;
     const t = setInterval(() => void open(conv.id).then(refreshList).catch(() => {}), 3000);

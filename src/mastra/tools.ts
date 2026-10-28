@@ -22,7 +22,6 @@ const UNAVAILABLE = {
 export function buildTools(ctx: ToolContext) {
   const step = (tool: string, summary: string, ok = true) => ctx.trace.push({ tool, summary, ok });
 
-  /** Executa uma operação no sistema legado convertendo indisponibilidade em resultado estruturado para o agent. */
   async function guarded<T>(tool: string, label: string, op: () => Promise<T>): Promise<T | typeof UNAVAILABLE> {
     try {
       const r = await op();

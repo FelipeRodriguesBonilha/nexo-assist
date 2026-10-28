@@ -8,7 +8,6 @@ export const maxDuration = 60;
 
 type Ctx = { params: Promise<{ id: string }> };
 
-/** Histórico + estado da conversa. `after` permite polling incremental (mensagens do analista). */
 export async function GET(req: Request, { params }: Ctx) {
   const me = await currentEmployee();
   if (!me) return unauthorized();
@@ -21,7 +20,6 @@ export async function GET(req: Request, { params }: Ctx) {
 
 const Body = z.object({ text: z.string().trim().min(1).max(2000) });
 
-/** Responde em NDJSON: um ChatEvent por linha, para exibir a resposta em tempo real. */
 export async function POST(req: Request, { params }: Ctx) {
   const me = await currentEmployee();
   if (!me) return unauthorized();

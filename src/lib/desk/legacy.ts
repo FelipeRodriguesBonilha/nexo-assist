@@ -1,4 +1,3 @@
-/** Simula a instabilidade do sistema de chamados legado e aplica retry com backoff. */
 export class LegacyUnavailableError extends Error {
   constructor() {
     super("O sistema de chamados está indisponível no momento.");

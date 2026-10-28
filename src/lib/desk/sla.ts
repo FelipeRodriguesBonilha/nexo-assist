@@ -13,7 +13,6 @@ export const SLA_LABEL: Record<Priority, string> = {
 
 const isBusinessDay = (d: Date) => d.getDay() !== 0 && d.getDay() !== 6;
 
-/** Move para o próximo instante dentro do expediente (seg-sex, 8h-18h, hora local). */
 function normalize(d: Date): Date {
   const r = new Date(d);
   for (;;) {
@@ -50,7 +49,6 @@ export function addBusinessDays(from: Date, days: number): Date {
   return r;
 }
 
-/** Prazo conta a partir da última atualização (primeira resposta e cada atualização). */
 export function computeDueAt(priority: Priority, from: Date): Date {
   switch (priority) {
     case "Crítica":
@@ -71,7 +69,6 @@ export interface PriorityInput {
   type: "INC" | "REQ";
 }
 
-/** Impacto x urgência (Anexo A). Pedidos sem urgência são Baixa; incidentes com alternativa são Média. */
 export function derivePriority({ impact, blocked, sameDayCommitment, type }: PriorityInput): Priority {
   if (blocked && impact !== "pessoa") return "Crítica";
   if (blocked || sameDayCommitment) return "Alta";

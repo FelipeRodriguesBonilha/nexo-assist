@@ -29,7 +29,6 @@ export const getConversation = (id: string): Conversation | null => {
   return r ? toConv(r) : null;
 };
 
-/** Privacidade: conversa só é acessível ao dono. */
 export const getOwnConversation = (id: string, employeeId: string): Conversation | null => {
   const c = getConversation(id);
   return c && c.employeeId === employeeId ? c : null;

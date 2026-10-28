@@ -8,7 +8,6 @@ import type { Employee } from "@/lib/desk/types";
 
 export const initials = (name: string) => name.split(" ").map((p) => p[0]).slice(0, 2).join("").toUpperCase();
 
-/** Layout do funcionário: navegação lateral, breadcrumb e perfil do usuário. */
 export function Shell({ me, active, title, right, side, children }: {
   me: Employee | null; active: "chat" | "perfil"; title: string; right?: React.ReactNode; side?: React.ReactNode; children: React.ReactNode;
 }) {

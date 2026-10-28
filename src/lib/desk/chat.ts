@@ -43,7 +43,6 @@ export async function* handleUserMessage(employee: Employee, conversationId: str
 
   yield { type: "user", message: addMessage(conversationId, "user", text) };
 
-  // Com analista (ou aguardando um), o agent não responde.
   if (conv.status !== "agent") {
     yield { type: "conversation", conversation: getConversation(conversationId)! };
     return;

@@ -22,7 +22,6 @@ export function toTicket(r: Row, now = new Date()): Ticket {
   };
 }
 
-/** Leitura crua (uso interno da UI do analista). Sem filtro de dono. */
 export function listTicketsOf(employeeId: string): Ticket[] {
   const rows = getDb().prepare("SELECT * FROM tickets WHERE requester_id = ? ORDER BY updated_at DESC").all(employeeId) as Row[];
   return rows.map((r) => toTicket(r));
@@ -34,7 +33,6 @@ export const legacyListTickets = (employeeId: string, status?: "aberto" | "resol
     return status === "aberto" ? all.filter(isOpen) : status === "resolvido" ? all.filter((t) => !isOpen(t)) : all;
   });
 
-/** Privacidade: só devolve o chamado se pertencer ao solicitante. */
 export const legacyGetTicket = (employeeId: string, ticketId: string) =>
   callLegacy(() => {
     const r = getDb().prepare("SELECT * FROM tickets WHERE id = ? AND requester_id = ?").get(ticketId.toUpperCase(), employeeId) as Row | undefined;
@@ -45,7 +43,6 @@ const STOP = new Set(["de", "da", "do", "no", "na", "o", "a", "e", "com", "para"
 const tokens = (s: string) =>
   s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").split(/[^a-z0-9]+/).filter((w) => w.length > 2 && !STOP.has(w));
 
-/** Duplicidade: chamados abertos do mesmo solicitante (ou resolvidos há <=7 dias, reabríveis) que se parecem com o texto. */
 export const legacyFindSimilar = (employeeId: string, text: string, category?: Category) =>
   callLegacy(() => {
     const words = new Set(tokens(text));
@@ -70,7 +67,6 @@ const nextId = (type: TicketType): string => {
   return `${type}-${n}`;
 };
 
-/** Aplica o rascunho confirmado. A chave de idempotência evita criar duas vezes em caso de retry. */
 export const legacyApplyDraft = (employeeId: string, draft: TicketDraft, idempotencyKey: string) =>
   callLegacy(() => {
     const db = getDb();

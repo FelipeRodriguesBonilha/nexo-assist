@@ -20,7 +20,6 @@ export default function LoginPage() {
 
   useEffect(() => {
     api<{ employee: Employee | null }>("/api/auth").then((r) => r.employee && go(r.employee)).catch(() => {});
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   async function submit(ev: React.FormEvent) {
