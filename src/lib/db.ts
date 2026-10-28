@@ -1,4 +1,4 @@
-import Database from "better-sqlite3";
+import { DatabaseSync } from "node:sqlite";
 import fs from "node:fs";
 import path from "node:path";
 import { seed } from "./desk/seed";
@@ -35,17 +35,16 @@ CREATE TABLE IF NOT EXISTS messages (
 CREATE INDEX IF NOT EXISTS idx_messages_conv ON messages(conversation_id, created_at);
 `;
 
-function open(): Database.Database {
+function open(): DatabaseSync {
   const file = process.env.DATABASE_PATH ?? "./data/nexo.db";
   if (file !== ":memory:") fs.mkdirSync(path.dirname(path.resolve(/*turbopackIgnore: true*/ file)), { recursive: true });
-  const db = new Database(file);
-  db.pragma("journal_mode = WAL");
-  db.pragma("foreign_keys = ON");
+  const db = new DatabaseSync(file);
+  db.exec("PRAGMA journal_mode = WAL; PRAGMA foreign_keys = ON;");
   db.exec(SCHEMA);
   const { n } = db.prepare("SELECT COUNT(*) n FROM employees").get() as { n: number };
   if (n === 0) seed(db);
   return db;
 }
 
-const g = globalThis as unknown as { __nexoDb?: Database.Database };
-export const getDb = (): Database.Database => (g.__nexoDb ??= open());
+const g = globalThis as unknown as { __nexoDb?: DatabaseSync };
+export const getDb = (): DatabaseSync => (g.__nexoDb ??= open());

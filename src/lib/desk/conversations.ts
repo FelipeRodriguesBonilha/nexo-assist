@@ -25,7 +25,7 @@ export function createConversation(employeeId: string): Conversation {
 }
 
 export const getConversation = (id: string): Conversation | null => {
-  const r = getDb().prepare("SELECT * FROM conversations WHERE id = ?").get(id) as ConvRow | undefined;
+  const r = getDb().prepare("SELECT * FROM conversations WHERE id = ?").get(id) as unknown as ConvRow | undefined;
   return r ? toConv(r) : null;
 };
 
@@ -35,7 +35,7 @@ export const getOwnConversation = (id: string, employeeId: string): Conversation
 };
 
 export const listConversationsOf = (employeeId: string): Conversation[] =>
-  (getDb().prepare("SELECT * FROM conversations WHERE employee_id = ? ORDER BY updated_at DESC").all(employeeId) as ConvRow[]).map(toConv);
+  (getDb().prepare("SELECT * FROM conversations WHERE employee_id = ? ORDER BY updated_at DESC").all(employeeId) as unknown as ConvRow[]).map(toConv);
 
 export function listAllConversations(status?: ConversationStatus): (Conversation & { employeeName: string; lastMessage: string })[] {
   const rows = getDb()
@@ -45,7 +45,7 @@ export function listAllConversations(status?: ConversationStatus): (Conversation
        FROM conversations c JOIN employees e ON e.id = c.employee_id
        ${status ? "WHERE c.status = ?" : ""} ORDER BY (c.status = 'waiting_analyst') DESC, c.updated_at DESC`,
     )
-    .all(...(status ? [status] : [])) as (ConvRow & { employee_name: string; last_message: string })[];
+    .all(...(status ? [status] : [])) as unknown as (ConvRow & { employee_name: string; last_message: string })[];
   return rows.map((r) => ({ ...toConv(r), employeeName: r.employee_name, lastMessage: r.last_message }));
 }
 
@@ -64,7 +64,7 @@ export function addMessage(conversationId: string, role: Message["role"], conten
 export const getMessages = (conversationId: string, after?: string): Message[] =>
   (getDb()
     .prepare(`SELECT * FROM messages WHERE conversation_id = ? ${after ? "AND created_at > ?" : ""} ORDER BY created_at, rowid`)
-    .all(...(after ? [conversationId, after] : [conversationId])) as MsgRow[]).map(toMsg);
+    .all(...(after ? [conversationId, after] : [conversationId])) as unknown as MsgRow[]).map(toMsg);
 
 export const countUserMessages = (conversationId: string): number =>
   (getDb().prepare("SELECT COUNT(*) n FROM messages WHERE conversation_id = ? AND role = 'user'").get(conversationId) as { n: number }).n;

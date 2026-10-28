@@ -6,7 +6,7 @@ const norm = (s: string) => s.toLowerCase().normalize("NFD").replace(/[\u0300-\u
 
 export function searchArticles(query: string, limit = 3): Article[] {
   const words = norm(query).split(/[^a-z0-9]+/).filter((w) => w.length > 2);
-  const rows = getDb().prepare("SELECT * FROM articles").all() as (Article & { keywords: string })[];
+  const rows = getDb().prepare("SELECT * FROM articles").all() as unknown as (Article & { keywords: string })[];
   return rows
     .map((a) => {
       const hay = norm(`${a.title} ${a.keywords} ${a.body}`);

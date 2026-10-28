@@ -5,7 +5,7 @@ Agent de service desk de TI: o funcionário conversa, o agent consulta a central
 ## Como rodar
 
 ```bash
-npm install
+npm install            # Node 22.13+ (usa o SQLite nativo do Node, sem compilar nada)
 cp .env.example .env.local   # (PowerShell: copy .env.example .env.local) preencha GOOGLE_GENERATIVE_AI_API_KEY
 npm run dev                  # http://localhost:3000
 ```

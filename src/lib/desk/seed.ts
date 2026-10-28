@@ -1,4 +1,4 @@
-import type Database from "better-sqlite3";
+import type { DatabaseSync } from "node:sqlite";
 import { hashPassword } from "./auth";
 
 export const DEMO_PASSWORD = "nexo123";
@@ -25,7 +25,7 @@ const ARTICLES = [
   ["kb-mfa", "Autenticação em dois fatores (MFA)", "Acesso", "Troca de celular: o código MFA precisa ser reconfigurado por um analista. Abra um chamado de acesso informando o novo número.", "mfa autenticador token código dois fatores celular"],
 ] as const;
 
-export function seed(db: Database.Database): void {
+export function seed(db: DatabaseSync): void {
   const pw = hashPassword(DEMO_PASSWORD);
   const insEmp = db.prepare("INSERT INTO employees VALUES (?,?,?,?,?,?)");
   for (const [id, email, name, role, dept] of EMPLOYEES) insEmp.run(id, email, name, pw, role, dept);
