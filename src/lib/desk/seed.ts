@@ -6,11 +6,11 @@ export const DEMO_PASSWORD = "nexo123";
 const ago = (days: number, hours = 0) => new Date(Date.now() - (days * 24 + hours) * 3_600_000).toISOString();
 
 const EMPLOYEES = [
-  ["u-ana", "ana.souza@nexo.com", "Ana Souza", "employee", "Financeiro"],
-  ["u-bruno", "bruno.lima@nexo.com", "Bruno Lima", "employee", "Comercial"],
-  ["u-carla", "carla.mendes@nexo.com", "Carla Mendes", "employee", "RH"],
-  ["u-diego", "diego.alves@nexo.com", "Diego Alves", "analyst", "TI - Suporte N1"],
-  ["u-marina", "marina.costa@nexo.com", "Marina Costa", "analyst", "TI - Suporte N2"],
+  ["u-ana", "ana.souza@nexo.com.br", "Ana Souza", "employee", "Financeiro"],
+  ["u-bruno", "bruno.lima@nexo.com.br", "Bruno Lima", "employee", "Comercial"],
+  ["u-carla", "carla.mendes@nexo.com.br", "Carla Mendes", "employee", "RH"],
+  ["u-diego", "diego.alves@nexo.com.br", "Diego Alves", "analyst", "TI - Suporte N1"],
+  ["u-marina", "marina.costa@nexo.com.br", "Marina Costa", "analyst", "TI - Suporte N2"],
 ] as const;
 
 const ARTICLES = [

@@ -176,5 +176,5 @@ export function buildTools(ctx: ToolContext) {
   };
 }
 
-export { isOpen };
+
 

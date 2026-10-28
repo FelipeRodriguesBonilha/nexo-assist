@@ -14,9 +14,9 @@ Usuários de demonstração (senha `nexo123`):
 
 | Perfil | E-mail |
 |---|---|
-| Funcionária (tem chamado vencido e resolvido recente) | ana.souza@nexo.com |
-| Funcionário | bruno.lima@nexo.com / carla.mendes@nexo.com |
-| Analista | diego.alves@nexo.com / marina.costa@nexo.com |
+| Funcionária (tem chamado vencido e resolvido recente) | ana.souza@nexo.com.br |
+| Funcionário | bruno.lima@nexo.com.br / carla.mendes@nexo.com.br |
+| Analista | diego.alves@nexo.com.br / marina.costa@nexo.com.br |
 
 O banco SQLite (`data/nexo.db`) é criado e populado com funcionários, 9 artigos e 7 chamados na primeira execução. Apague o arquivo para recriar. Testes: `npm test` (prazos/SLA). Typecheck: `npm run typecheck`.
 

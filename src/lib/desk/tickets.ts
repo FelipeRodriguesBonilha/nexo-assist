@@ -2,6 +2,7 @@ import crypto from "node:crypto";
 import { getDb } from "../db";
 import { callLegacy } from "./legacy";
 import { computeDueAt } from "./sla";
+import { isOpen } from "./tickets-shared";
 import type { Category, Priority, Ticket, TicketDraft, TicketStatus, TicketType } from "./types";
 
 interface Row {
@@ -9,8 +10,6 @@ interface Row {
   status: TicketStatus; requester_id: string; created_at: string; updated_at: string; resolved_at: string | null;
 }
 
-const OPEN: TicketStatus[] = ["Aberto", "Em andamento", "Aguardando analista", "Aprovado"];
-export const isOpen = (t: Ticket) => OPEN.includes(t.status);
 export const REOPEN_WINDOW_MS = 7 * 24 * 3_600_000;
 
 export function toTicket(r: Row, now = new Date()): Ticket {
@@ -99,3 +98,5 @@ export const legacyApplyDraft = (employeeId: string, draft: TicketDraft, idempot
   });
 
 export const newId = () => crypto.randomUUID();
+
+export { isOpen };
