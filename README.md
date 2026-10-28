@@ -6,7 +6,7 @@ Agent de service desk de TI: o funcionário conversa, o agent consulta a central
 
 ```bash
 npm install
-cp .env.example .env.local   # preencha GOOGLE_GENERATIVE_AI_API_KEY
+cp .env.example .env.local   # (PowerShell: copy .env.example .env.local) preencha GOOGLE_GENERATIVE_AI_API_KEY
 npm run dev                  # http://localhost:3000
 ```
 

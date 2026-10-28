@@ -4,7 +4,7 @@ import { searchArticles } from "@/lib/desk/kb";
 import { getDraft, setDraft, updateConversation, countUserMessages } from "@/lib/desk/conversations";
 import { LegacyUnavailableError } from "@/lib/desk/legacy";
 import { SLA_LABEL, computeDueAt, derivePriority } from "@/lib/desk/sla";
-import { isOpen, legacyApplyDraft, legacyFindSimilar, legacyGetTicket, legacyListTickets, newId } from "@/lib/desk/tickets";
+import { legacyApplyDraft, legacyFindSimilar, legacyGetTicket, legacyListTickets, newId } from "@/lib/desk/tickets";
 import { CATEGORIES, type Employee, type MessagePart, type TicketDraft, type TraceStep } from "@/lib/desk/types";
 
 export interface ToolContext {

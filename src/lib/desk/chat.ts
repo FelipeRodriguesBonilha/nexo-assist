@@ -1,4 +1,5 @@
 import { createAgent } from "@/mastra/agent";
+import { rateLimited } from "../rate-limit";
 import { addMessage, countUserMessages, getConversation, getMessages } from "./conversations";
 import type { Conversation, Employee, Message, MessagePart, TraceStep } from "./types";
 
@@ -38,6 +39,11 @@ export async function* handleUserMessage(employee: Employee, conversationId: str
   }
   if (countUserMessages(conversationId) >= MAX_USER_MESSAGES) {
     yield { type: "error", message: `Limite de ${MAX_USER_MESSAGES} mensagens por conversa atingido. Inicie uma nova conversa.` };
+    return;
+  }
+
+  if (rateLimited(`chat:${employee.id}`, 12, 60_000)) {
+    yield { type: "error", message: "Você está enviando mensagens rápido demais. Aguarde um instante." };
     return;
   }
 
