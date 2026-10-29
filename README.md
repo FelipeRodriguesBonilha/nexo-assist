@@ -66,6 +66,16 @@ Testes automatizados de comportamento do agent (evals), rate limiting por usuár
 
 Código desenvolvido com assistência de IA (Devin), revisado e testado manualmente.
 
-## Deploy (opcional)
+## Deploy (Render)
 
-Precisa de disco persistente por causa do SQLite: Railway/Fly.io/Render com volume em `DATABASE_PATH`. Configure `GOOGLE_GENERATIVE_AI_API_KEY` como variável secreta, `LEGACY_FAILURE_RATE=0.15` e limite de gasto na chave do Google AI Studio.
+O repositório traz um `render.yaml` (Blueprint). Passo a passo:
+
+1. No Render: **New > Blueprint**, conecte o repositório do GitHub e confirme o `render.yaml`.
+2. Informe o valor de `GOOGLE_GENERATIVE_AI_API_KEY` (a única variável marcada como secreta, fora do código).
+3. Aguarde o build (`npm ci && npm run build`) e abra a URL gerada (`https://nexo-assist.onrender.com` ou similar).
+
+Notas:
+- Plano gratuito: o serviço dorme após alguns minutos sem uso (o primeiro acesso demora cerca de 1 minuto) e **não tem disco persistente**. O SQLite é recriado com os dados de exemplo a cada reinício. Para manter os dados, use um plano pago com disco e aponte `DATABASE_PATH` para ele.
+- Uso e custo: a chave do Gemini deve ter limite de gasto no Google AI Studio. O app limita 12 mensagens por minuto por pessoa, 30 mensagens por conversa, 2000 caracteres por mensagem e tentativas de login.
+- Rode apenas uma instância (SQLite em arquivo e limites de uso em memória).
+- Contas de demonstração (senha `nexo123`): `ana.souza@nexo.com.br` (funcionária) e `diego.alves@nexo.com.br` (analista).

@@ -1,0 +1,21 @@
+services:
+  - type: web
+    name: nexo-assist
+    runtime: node
+    plan: free
+    region: oregon
+    buildCommand: npm ci && npm run build
+    startCommand: npm run start
+    healthCheckPath: /
+    autoDeploy: true
+    envVars:
+      - key: NODE_VERSION
+        value: 24
+      - key: GOOGLE_GENERATIVE_AI_API_KEY
+        sync: false
+      - key: AGENT_MODEL
+        value: google/gemini-3.5-flash
+      - key: LEGACY_FAILURE_RATE
+        value: "0.15"
+      - key: MAX_USER_MESSAGES
+        value: "30"
