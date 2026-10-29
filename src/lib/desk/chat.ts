@@ -1,4 +1,4 @@
-import { createAgent } from "@/mastra/agent";
+import { configuredModels, createAgent } from "@/mastra/agent";
 import { rateLimited } from "../rate-limit";
 import { addMessage, countUserMessages, getConversation, getMessages } from "./conversations";
 import type { Conversation, Employee, Message, MessagePart, TraceStep } from "./types";
@@ -14,7 +14,15 @@ export type ChatEvent =
 const MAX_USER_MESSAGES = Number(process.env.MAX_USER_MESSAGES ?? 30);
 const HISTORY = 16;
 
+const QUOTA_MESSAGE = "O limite de uso da IA foi atingido no momento. Tente novamente em alguns minutos ou peça para falar com um analista.";
+
 const FALLBACK = "Tive um problema técnico para responder agora. Você pode tentar de novo ou pedir para falar com um analista.";
+
+function isCapacityError(e: unknown, depth = 0): boolean {
+  if (!e || typeof e !== "object" || depth > 3) return false;
+  const err = e as { statusCode?: number; message?: string; cause?: unknown };
+  return err.statusCode === 429 || err.statusCode === 503 || /quota|RESOURCE_EXHAUSTED|overloaded|unavailable/i.test(err.message ?? "") || isCapacityError(err.cause, depth + 1);
+}
 
 function history(conversationId: string) {
   return getMessages(conversationId)
@@ -56,30 +64,42 @@ export async function* handleUserMessage(employee: Employee, conversationId: str
 
   const parts: MessagePart[] = [];
   const trace: TraceStep[] = [];
-  const agent = createAgent({ employee, conversationId, parts, trace });
   let answer = "";
   let seen = 0;
+  let capacityFailure = false;
 
-  try {
-    const out = await agent.stream(history(conversationId), { maxSteps: 6 });
-    for await (const chunk of out.fullStream) {
-      if (chunk.type === "text-delta") {
-        answer += chunk.payload.text;
-        yield { type: "text", delta: chunk.payload.text };
-      } else if (chunk.type === "tool-result" || chunk.type === "tool-error") {
-        while (seen < trace.length) yield { type: "trace", step: trace[seen++]! };
-      } else if (chunk.type === "error") {
-        throw chunk.payload.error instanceof Error ? chunk.payload.error : new Error(String(chunk.payload.error));
+  for (const model of configuredModels()) {
+    capacityFailure = false;
+    try {
+      const out = await createAgent({ employee, conversationId, parts, trace }, model).stream(history(conversationId), { maxSteps: 6 });
+      for await (const chunk of out.fullStream) {
+        if (chunk.type === "text-delta") {
+          answer += chunk.payload.text;
+          yield { type: "text", delta: chunk.payload.text };
+        } else if (chunk.type === "tool-result" || chunk.type === "tool-error") {
+          while (seen < trace.length) yield { type: "trace", step: trace[seen++]! };
+        } else if (chunk.type === "error") {
+          throw chunk.payload.error instanceof Error ? chunk.payload.error : new Error(String(chunk.payload.error));
+        }
       }
+      while (seen < trace.length) yield { type: "trace", step: trace[seen++]! };
+      break;
+    } catch (e) {
+      console.error(`[agent:${model}]`, e);
+      capacityFailure = isCapacityError(e);
+      if (capacityFailure && !answer && !parts.length) continue;
+      if (!answer && !parts.length) {
+        yield { type: "error", message: capacityFailure ? QUOTA_MESSAGE : FALLBACK };
+        return;
+      }
+      answer ||= "Executei a ação, mas tive um problema para redigir a resposta. Confira os detalhes abaixo.";
+      break;
     }
-    while (seen < trace.length) yield { type: "trace", step: trace[seen++]! };
-  } catch (e) {
-    console.error("[agent]", e);
-    if (!answer && !parts.length) {
-      yield { type: "error", message: FALLBACK };
-      return;
-    }
-    answer ||= "Executei a ação, mas tive um problema para redigir a resposta. Confira os detalhes abaixo.";
+  }
+
+  if (capacityFailure && !answer && !parts.length) {
+    yield { type: "error", message: QUOTA_MESSAGE };
+    return;
   }
 
   const ordered: MessagePart[] = [...(trace.length ? [{ kind: "trace" as const, steps: trace }] : []), ...parts];

@@ -23,13 +23,18 @@ ${pendingDraft ? `
 RASCUNHO PENDENTE de confirmação (já mostrado ao funcionário): ${pendingDraft}
 Se ele confirmar claramente, chame confirm_ticket_draft. Se pedir mudanças, proponha novo rascunho. Se desistir, avise que nada foi criado.` : ""}`;
 
-export function createAgent(ctx: ToolContext) {
+export const DEFAULT_MODELS = "google/gemini-3.5-flash,google/gemini-3.1-flash-lite,google/gemini-3-flash-preview";
+
+export const configuredModels = (): string[] =>
+  (process.env.AGENT_MODEL ?? DEFAULT_MODELS).split(",").map((m) => m.trim()).filter(Boolean);
+
+export function createAgent(ctx: ToolContext, model: string) {
   const pending = getDraft(ctx.conversationId);
   return new Agent({
     id: "nexo-assist",
     name: "Nexo Assist",
     instructions: INSTRUCTIONS(ctx.employee.name.split(" ")[0] ?? ctx.employee.name, new Date(), pending ? JSON.stringify(pending.draft) : null),
-    model: process.env.AGENT_MODEL ?? "google/gemini-3.5-flash",
+    model,
     tools: buildTools(ctx),
   });
 }
